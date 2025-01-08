@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Skill Matrix</title>
+</head>
+<body>
+    <h1>GitHub Skill Matrix</h1>
+    <form method="post">
+        <label for="username">GitHub Username:</label>
+        <input type="text" id="username" name="username" required>
+        <button type="submit">Generate Skill Matrix</button>
+    </form>
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    {% if graph %}
+    <h2>Skill Matrix for {{ username }}</h2>
+    <img src="{{ graph_url }}" alt="Skill Graph">
+    <h3>Markdown Snippet for Your README:</h3>
+    <pre>{{ markdown_snippet }}</pre>
+    {% endif %}
+</body>
+</html>
