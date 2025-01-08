@@ -23,7 +23,7 @@ def index():
         graph_url = url_for("static", filename="skill_graph.png")
 
         # Generate the Markdown snippet
-        markdown_snippet = f"![Skill Matrix](http://127.0.0.1:5000{graph_url})"
+        markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{graph_url})"
 
         return render_template(
             "index.html",
@@ -34,5 +34,8 @@ def index():
         )
     return render_template("index.html", graph=False)
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Get the port from environment variable (Render provides it)
+    port = os.getenv("PORT", 5000)
+    app.run(host="0.0.0.0", port=int(port))
