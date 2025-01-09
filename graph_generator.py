@@ -1,8 +1,9 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import plotly.graph_objects as go
 
 def generate_skill_matrix(languages, filename="static/skill_graph.png"):
-
+    """
+    This generates a skill matrix graph with Plotly and save it as an image.
+    """
     labels = list(languages.keys())
     values = list(languages.values())
 
@@ -15,18 +16,31 @@ def generate_skill_matrix(languages, filename="static/skill_graph.png"):
     values += values[:1]
     labels += labels[:1]
 
-    # Calculate the angles for the radar chart
-    num_vars = len(labels)
-    angles = [n / float(num_vars - 1) * 2 * np.pi for n in range(num_vars)]
-
     # Create the radar chart
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-    ax.fill(angles, values, color="blue", alpha=0.25)
-    ax.plot(angles, values, color="blue", linewidth=2)
-    ax.set_yticks([])
-    ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(labels[:-1])  # Exclude the duplicate label
+    fig = go.Figure()
 
-    # Save the graph with the specified filename
-    plt.savefig(filename, bbox_inches="tight")
-    plt.close()
+    fig.add_trace(go.Scatterpolar(
+        r=values,
+        theta=labels,
+        fill='toself',
+        name="Skill Matrix",
+        marker=dict(color="rgba(0,128,255,0.7)")
+    ))
+
+    # Update chart aesthetics
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, max(values) + 1],
+                showline=True,
+                showticklabels=True
+            )
+        ),
+        showlegend=False,
+        title="Skill Matrix Graph",
+        font=dict(family="Arial, sans-serif", size=12, color="#4a4a4a")
+    )
+
+    # Save the chart as a static image
+    fig.write_image(filename)
