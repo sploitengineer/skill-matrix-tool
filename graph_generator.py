@@ -12,6 +12,10 @@ def generate_skill_matrix(languages, filename="static/skill_graph.png"):
         labels += ["Dummy1", "Dummy2"][:3 - len(labels)]
         values += [0] * (3 - len(values))
 
+    # Normalize values to a smaller range (0 to 10)
+    max_value = max(values) if max(values) > 0 else 1  # Avoid division by zero
+    values = [v / max_value * 10 for v in values]
+
     # Close the loop for the radar chart
     values += values[:1]
     labels += labels[:1]
@@ -32,10 +36,10 @@ def generate_skill_matrix(languages, filename="static/skill_graph.png"):
         polar=dict(
             radialaxis=dict(
                 visible=True,
-                range=[0, max(values) + 1],
+                range=[0, 10], #Set fixed range after normalization
                 showline=True,
                 showticklabels=True,
-                tickformat=".0f",  # No scientific notation, no abbreviations
+                tickformat=".0f",  # No scientific notation, no abbreviations (Ensure plain numbers)
             )
         ),
         showlegend=False,
