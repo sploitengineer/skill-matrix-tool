@@ -5,7 +5,6 @@ import os
 
 app = Flask(__name__)
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -16,13 +15,14 @@ def index():
         if user_data["repos_count"] == 0:
             return render_template("index.html", error="No public repositories found for this user.", graph=False)
 
-        # Generate the skill matrix graph
-        generate_skill_matrix(user_data["languages"])
+        # Generate the skill matrix graph for the specific user
+        filename = f"static/{username}_skill_graph.png"
+        generate_skill_matrix(user_data["languages"], filename)
 
-        # Generate a URL for the graph
-        graph_url = url_for("static", filename="skill_graph.png")
+        # Generate a unique URL for the graph
+        graph_url = url_for("static", filename=f"{username}_skill_graph.png")
 
-        # Generate the Markdown snippet
+        # Generate the Markdown snippet for embedding
         markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{graph_url})"
 
         return render_template(
@@ -34,8 +34,6 @@ def index():
         )
     return render_template("index.html", graph=False)
 
-
 if __name__ == "__main__":
-    # Get the port from environment variable (Render provides it)
     port = os.getenv("PORT", 5000)
     app.run(host="0.0.0.0", port=int(port))
