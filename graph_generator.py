@@ -27,14 +27,15 @@ def generate_skill_matrix(languages, filename="static/skill_graph.png"):
         marker=dict(color="rgba(0,128,255,0.7)")
     ))
 
-    # Update chart aesthetics
+    # aesthetics
     fig.update_layout(
         polar=dict(
             radialaxis=dict(
                 visible=True,
                 range=[0, max(values) + 1],
                 showline=True,
-                showticklabels=True
+                showticklabels=True,
+                tickformat=".0f",  # No scientific notation, no abbreviations
             )
         ),
         showlegend=False,
