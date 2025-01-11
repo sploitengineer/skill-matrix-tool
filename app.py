@@ -4,6 +4,24 @@ from graph_generator import generate_skill_matrix
 import sqlite3
 import os
 
+##Reminder this is only for Render. Normally just initialize init_db.py on local testing
+# Initialize the database and create the table if it doesn't exist
+def init_db():
+    conn = sqlite3.connect('database.db')  # Database file
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            graph_url TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# Call the init_db function when the app starts
+init_db()
+
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
