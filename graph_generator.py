@@ -1,8 +1,8 @@
 import plotly.graph_objects as go
 
-def generate_skill_matrix(languages, filename="static/skill_graph.png"):
+def generate_skill_matrix(languages, filename="static/skill_graph.html"):
     """
-    This generates a skill matrix graph with Plotly and save it as an image.
+    This generates a skill matrix graph with Plotly and save it as an interactive HTML file.
     """
     labels = list(languages.keys())
     values = list(languages.values())
@@ -30,6 +30,12 @@ def generate_skill_matrix(languages, filename="static/skill_graph.png"):
         name="Skill Matrix",
         marker=dict(color="rgba(0,128,255,0.7)"),
         hovertemplate="<b>Skill:</b> %{theta}<br><b>Score:</b> %{r:.1f}/10<extra></extra>"  #To customize tooltips for each point on the graph
+        ##Info about complicate above format code for my future self
+        """ 
+        %{theta}: Displays the skill name (language).
+        %{r:.1f}: Displays the score (normalized value) to one decimal place.
+        <extra></extra>: Removes the default extra information displayed by Plotly 
+        """
     ))
 
     # aesthetics
@@ -48,5 +54,5 @@ def generate_skill_matrix(languages, filename="static/skill_graph.png"):
         font=dict(family="Arial, sans-serif", size=12, color="#4a4a4a")
     )
 
-    # Save the chart as a static image
-    fig.write_image(filename)
+    # Save the chart as an interactive HTML file
+    fig.write_html(filename)

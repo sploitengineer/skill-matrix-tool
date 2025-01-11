@@ -17,7 +17,7 @@
     {% endif %}
     {% if graph %}
     <h2>Skill Matrix for {{ username }}</h2>
-    <img src="{{ graph_url }}" alt="Skill Graph">
+    <iframe src="{{ graph_url }}" width="700" height="600" frameborder="0"></iframe>
     <h3>Markdown Snippet for Your README:</h3>
     <pre>{{ markdown_snippet }}</pre>
     {% endif %}
