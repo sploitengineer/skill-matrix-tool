@@ -16,20 +16,23 @@ def index():
             return render_template("index.html", error="No public repositories found for this user.", graph=False)
 
         # Generate the skill matrix graph for the specific user
-        filename = f"static/{username}_skill_graph.html"
-        generate_skill_matrix(user_data["languages"], filename)
+        interactive_filename = f"static/{username}_skill_graph.html"
+        static_filename = f"static/{username}_skill_graph.png"
+        generate_skill_matrix(user_data["languages"], static_filename, interactive_filename)
 
-        # Generate a unique URL for the graph
-        graph_url = url_for("static", filename=f"{username}_skill_graph.html")
+        # Generate a unique URL for both version of graph
+        interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
+        static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
 
         # Generate the Markdown snippet for embedding
-        markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{graph_url})"
+        markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{static_graph_url})"
 
         return render_template(
             "index.html",
             username=username,
             graph=True,
-            graph_url=graph_url,
+            static_graph_url=static_graph_url,
+            interactive_graph_url=interactive_graph_url,
             markdown_snippet=markdown_snippet,
         )
     return render_template("index.html", graph=False)

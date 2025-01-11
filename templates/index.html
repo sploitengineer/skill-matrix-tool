@@ -17,7 +17,10 @@
     {% endif %}
     {% if graph %}
     <h2>Skill Matrix for {{ username }}</h2>
-    <iframe src="{{ graph_url }}" width="700" height="600" frameborder="0"></iframe>
+    <h3>Static Version (For Markdown):</h3>
+    <img src="{{ static_graph_url }}" alt="Skill Graph">
+    <h3>Interactive Version (Website View):</h3>
+    <iframe src="{{ interactive_graph_url }}" width="700" height="600" frameborder="0"></iframe>
     <h3>Markdown Snippet for Your README:</h3>
     <pre>{{ markdown_snippet }}</pre>
     {% endif %}
