@@ -43,7 +43,7 @@ def index():
                                    graph=True,
                                    graph_url=graph_url,
                                    markdown_snippet=markdown_snippet,
-                                   existing=True)
+                                   existing=True)  # Indicating this is an existing graph
         else:
             # If no data is found, generate a new graph
             user_data = fetch_github_data(username)
@@ -57,14 +57,13 @@ def index():
             static_filename = f"static/{username}_skill_graph.png"
             generate_skill_matrix(user_data["languages"], static_filename, interactive_filename)
 
-            # Generate a unique URL for both version of graph
+            # Generate a unique URL for both versions of the graph
             interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
             static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
 
             # Save or update user graph data in the database
             conn = get_db_connection()
             conn.execute("INSERT INTO users (username, graph_url) VALUES (?, ?)", (username, interactive_graph_url))
-            # To check if username already exist : ON CONFLICT(username) DO UPDATE SET graph_url = excluded.graph_url
             conn.commit()
             conn.close()
 
@@ -78,7 +77,7 @@ def index():
                 static_graph_url=static_graph_url,
                 interactive_graph_url=interactive_graph_url,
                 markdown_snippet=markdown_snippet,
-                existing=False,
+                existing=False  # Indicating this is a new graph
             )
     return render_template("index.html", graph=False)
 
