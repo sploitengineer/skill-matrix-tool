@@ -19,10 +19,18 @@
     <h2>Skill Matrix for {{ username }}</h2>
 <!--    <h3>Static Version (For Markdown):</h3>-->
 <!--    <img src="{{ static_graph_url }}" alt="Skill Graph">-->
-    <h3>Interactive Version (Website Feature Only):</h3>
+    <h3>Interactive Version (Website Only):</h3>
     <iframe src="{{ interactive_graph_url }}" width="700" height="600" frameborder="0"></iframe>
     <h3>Markdown Snippet for Your README:</h3>
     <pre>{{ markdown_snippet }}</pre>
+
+    {% if existing %}
+            <p>You already have a graph for this username. Would you like to update it?</p>
+            <form method="post">
+                <input type="hidden" name="username" value="{{ username }}">
+                <button type="submit">Update Graph</button>
+            </form>
+        {% endif %}
     {% endif %}
 </body>
 </html>

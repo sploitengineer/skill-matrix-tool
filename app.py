@@ -10,7 +10,25 @@ app = Flask(__name__)
 def index():
     if request.method == "POST":
         username = request.form["username"]
-        user_data = fetch_github_data(username)
+
+        # Check if the username already exists in the database
+        conn = get_db_connection()
+        user_data = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        conn.close()
+
+        if user_data:
+            # If the user exists in the database, show the existing graph and prompt for an update
+            graph_url = user_data['graph_url']
+            markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{graph_url})"
+            return render_template("index.html",
+                                   username=username,
+                                   graph=True,
+                                   graph_url=graph_url,
+                                   markdown_snippet=markdown_snippet,
+                                   existing=True)
+        else:
+            # If no data is found, generate a new graph
+            user_data = fetch_github_data(username)
 
         # Check if the user has public repositories
         if user_data["repos_count"] == 0:
@@ -27,11 +45,8 @@ def index():
 
         # Save or update user graph data in the database
         conn = get_db_connection()
-        conn.execute("""
-            INSERT INTO users (username, graph_url)
-            VALUES (?, ?)
-            ON CONFLICT(username) DO UPDATE SET graph_url = excluded.graph_url
-        """, (username, interactive_graph_url))
+        conn.execute("INSERT INTO users (username, graph_url) VALUES (?, ?)", (username, interactive_graph_url))
+        # To check if username already exist : ON CONFLICT(username) DO UPDATE SET graph_url = excluded.graph_url
         conn.commit()
         conn.close()
 
