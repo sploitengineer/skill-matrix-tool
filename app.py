@@ -78,6 +78,7 @@ def index():
                 static_graph_url=static_graph_url,
                 interactive_graph_url=interactive_graph_url,
                 markdown_snippet=markdown_snippet,
+                existing=False,
             )
     return render_template("index.html", graph=False)
 
