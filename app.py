@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for
 from github_api import fetch_github_data
 from graph_generator import generate_skill_matrix
+import sqlite3
 import os
 
 app = Flask(__name__)
@@ -24,6 +25,16 @@ def index():
         interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
         static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
 
+        # Save or update user graph data in the database
+        conn = get_db_connection()
+        conn.execute("""
+            INSERT INTO users (username, graph_url)
+            VALUES (?, ?)
+            ON CONFLICT(username) DO UPDATE SET graph_url = excluded.graph_url
+        """, (username, interactive_graph_url))
+        conn.commit()
+        conn.close()
+
         # Generate the Markdown snippet for embedding
         markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{static_graph_url})"
 
@@ -36,6 +47,12 @@ def index():
             markdown_snippet=markdown_snippet,
         )
     return render_template("index.html", graph=False)
+
+def get_db_connection():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row  # Return rows as dictionaries
+    return conn
+
 
 if __name__ == "__main__":
     port = os.getenv("PORT", 5000)
