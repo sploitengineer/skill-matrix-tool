@@ -28,7 +28,8 @@ def generate_skill_matrix(languages, filename="static/skill_graph.png"):
         theta=labels,
         fill='toself',
         name="Skill Matrix",
-        marker=dict(color="rgba(0,128,255,0.7)")
+        marker=dict(color="rgba(0,128,255,0.7)"),
+        hovertemplate="<b>Skill:</b> %{theta}<br><b>Score:</b> %{r:.1f}/10<extra></extra>"  #To customize tooltips for each point on the graph
     ))
 
     # aesthetics
