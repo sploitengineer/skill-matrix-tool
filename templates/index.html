@@ -19,13 +19,6 @@
 
     {% if graph %}
         <h2>Skill Matrix for {{ username }}</h2>
-
-        <h3>Interactive Version (Website Only):</h3>
-        <iframe src="{{ interactive_graph_url }}" width="700" height="600" frameborder="0"></iframe>
-
-        <h3>Markdown Snippet for Your README:</h3>
-        <pre>{{ markdown_snippet }}</pre>
-
         {% if existing %}
             <p style="color: green;">You already have a graph for this username. Would you like to update it?</p>
             <form method="post">
@@ -33,6 +26,14 @@
                 <button type="submit">Update Graph</button>
             </form>
         {% endif %}
+
+        <h3>Interactive Version (Website Only):</h3>
+        <iframe src="{{ interactive_graph_url }}" width="700" height="600" frameborder="0"></iframe>
+
+        <h3>Markdown Snippet for Your README:</h3>
+        <pre>{{ markdown_snippet }}</pre>
+
+
     {% endif %}
 </body>
 </html>
