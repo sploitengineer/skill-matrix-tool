@@ -35,7 +35,7 @@
         </select>
 
 
-        <button type="submit">Generate Skill Matrix</button>
+        <button type="submit" name="action" value="generate">Generate Skill Matrix</button>
     </form>
 
     {% if error %}
@@ -48,6 +48,7 @@
             <p style="color: green;">You already have a graph for this username. Would you like to update it?</p>
             <form method="post">
                 <input type="hidden" name="username" value="{{ username }}">
+                 <input type="hidden" name="action" value="update"> <!--Adding action for update-->
                 <button type="submit">Update Graph</button>
             </form>
         {% endif %}
