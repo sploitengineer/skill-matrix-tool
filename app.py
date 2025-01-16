@@ -28,6 +28,9 @@ app = Flask(__name__)
 def index():
     if request.method == "POST":
         username = request.form["username"]
+        color = request.form.get("color", "blue") # default blue
+        opacity = float(request.form.get("opacity", "1.0")) #Default to full opacity
+        size = request.form.get("size", "medium") # Default to medium size
 
         # Check if the username already exists in the database
         conn = get_db_connection()

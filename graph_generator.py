@@ -1,6 +1,6 @@
 import plotly.graph_objects as go
 
-def generate_skill_matrix(languages, static_filename="static/skill_graph.png", interactive_filename="static/skill_graph.html"):
+def generate_skill_matrix(languages, static_filename="static/skill_graph.png", interactive_filename="static/skill_graph.html", color="blue", opacity=1.0, size="medium"):
     """
     This generates a skill matrix graph with Plotly and save it as an interactive HTML file.
     """
@@ -20,6 +20,14 @@ def generate_skill_matrix(languages, static_filename="static/skill_graph.png", i
     values += values[:1]
     labels += labels[:1]
 
+    # Adjust graph size
+    if size == "small":
+        graph_width, graph_height = 500, 400
+    elif size == "large":
+        graph_width, graph_height = 1000, 800
+    else:  # Default to medium
+        graph_width, graph_height = 700, 600
+
     # Create the radar chart
     fig = go.Figure()
 
@@ -27,6 +35,7 @@ def generate_skill_matrix(languages, static_filename="static/skill_graph.png", i
         r=values,
         theta=labels,
         fill='toself',
+        fillcolor=color if opacity == 1.0 else f"rgba(0, 0, 255, {opacity})",
         name="Skill Matrix",
         marker=dict(color="rgba(0,128,255,0.7)"),
         hovertemplate="<b>Skill:</b> %{theta}<br><b>Score:</b> %{r:.1f}/10<extra></extra>"  #To customize tooltips for each point on the graph
@@ -49,6 +58,8 @@ def generate_skill_matrix(languages, static_filename="static/skill_graph.png", i
         ),
         showlegend=False,
         title="Skill Matrix Graph",
+        width=graph_width,
+        height=graph_height,
         font=dict(family="Arial, sans-serif", size=12, color="#4a4a4a")
     )
     #Save the static image

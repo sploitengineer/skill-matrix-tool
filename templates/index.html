@@ -10,6 +10,31 @@
     <form method="post">
         <label for="username">GitHub Username:</label>
         <input type="text" id="username" name="username" required>
+
+        <h3>Customize Your Graph</h3>
+
+        <label for="color">Color Theme:</label>
+        <select id="color" name="color">
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+            <option value="red">Red</option>
+            <option value="gradient">Gradient</option>
+        </select>
+
+        <label for="opacity">Fill Opacity:</label>
+        <select id="opacity" name="opacity">
+            <option value="1.0">Full</option>
+            <option value="0.5">Semi-Transparent</option>
+        </select>
+
+        <label for="size">Graph Size:</label>
+        <select id="size" name="size">
+            <option value="small">Small</option>
+            <option value="medium" selected>Medium</option>
+            <option value="large">Large</option>
+        </select>
+
+
         <button type="submit">Generate Skill Matrix</button>
     </form>
 
