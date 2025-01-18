@@ -4,6 +4,11 @@ def generate_skill_matrix(languages, static_filename="static/skill_graph.png", i
     """
     This generates a skill matrix graph with Plotly and save it as an interactive HTML file.
     """
+
+    valid_colors = {"blue": "rgba(0, 0, 255, {opacity})", "green": "rgba(0, 255, 0, {opacity})", "red": "rgba(255, 0, 0, {opacity})"}
+    fill_color = valid_colors.get(color, "rgba(0, 0, 255, {opacity})").format(opacity=opacity)
+
+
     labels = list(languages.keys())
     values = list(languages.values())
 
@@ -35,7 +40,8 @@ def generate_skill_matrix(languages, static_filename="static/skill_graph.png", i
         r=values,
         theta=labels,
         fill='toself',
-        fillcolor=color if opacity == 1.0 else f"rgba(0, 0, 255, {opacity})",
+        # fillcolor=color if opacity == 1.0 else f"rgba(0, 0, 255, {opacity})",
+        fillcolor=fill_color,
         name="Skill Matrix",
         marker=dict(color="rgba(0,128,255,0.7)"),
         hovertemplate="<b>Skill:</b> %{theta}<br><b>Score:</b> %{r:.1f}/10<extra></extra>"  #To customize tooltips for each point on the graph
