@@ -33,59 +33,9 @@ def index():
         opacity = float(request.form.get("opacity", "1.0")) #Default to full opacity
         size = request.form.get("size", "medium") # Default to medium size
 
-        # Check if the username already exists in the database
-        conn = get_db_connection()
-        user_data = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
-        conn.close()
-        # Removed this for now
-        # if action == "update":
-        #     ##If the user chooses to update graph
-        #     if user_data:
-        #         # If the user exists in the database, show the existing graph and prompt for an update
-        #         user_data = fetch_github_data(username)
-        #
-        #         if user_data["repos_count"] == 0:
-        #             return render_template("index.html", error="No public repositories found for this user.", graph=False)
-        #
-        #         interactive_filename = f"static/{username}_skill_graph.html"
-        #         static_filename = f"static/{username}_skill_graph.png"
-        #         generate_skill_matrix(user_data["languages"], static_filename, interactive_filename, color, opacity, size)
-        #
-        #         interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
-        #         static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
-        #
-        #         # Update the database with the new graph URL
-        #         conn = get_db_connection()
-        #         conn.execute("UPDATE users SET graph_url = ? WHERE username = ?", (interactive_graph_url, username))
-        #         conn.commit()
-        #         conn.close()
-        #
-        #         markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{static_graph_url})"
-        #
-        #
-        #         return render_template("index.html",
-        #                                username=username,
-        #                                graph=True,
-        #                                static_graph_url=static_graph_url,
-        #                                interactive_graph_url=interactive_graph_url,
-        #                                markdown_snippet=markdown_snippet,
-        #                                existing=True)  # Indicating this is an existing graph
-        #     else:
-        #         return render_template("index.html", error="No existing graph found to update.", graph=False)
 
         if action == "generate":
-            if user_data:
-                graph_url = user_data["graph_url"]
-                markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{graph_url})"
-                return render_template("index.html",
-                                       username=username,
-                                       graph=True,
-                                       graph_url=graph_url,
-                                       markdown_snippet=markdown_snippet,
-                                       existing=True)
 
-            else:
-                # If no data is found, generate a new graph
                 user_data = fetch_github_data(username)
 
                 # Check if the user has public repositories
@@ -101,9 +51,13 @@ def index():
                 interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
                 static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
 
-                # Save or update user graph data in the database
+                # Save/update user graph data in the database
                 conn = get_db_connection()
-                conn.execute("INSERT INTO users (username, graph_url) VALUES (?, ?)", (username, interactive_graph_url))
+                user_data_db = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+                if user_data_db:
+                    conn.execute("UPDATE users SET graph_url = ? WHERE username = ?", (interactive_graph_url, username))
+                else:
+                    conn.execute("INSERT INTO users (username, graph_url) VALUES (?, ?)", (username, interactive_graph_url))
                 conn.commit()
                 conn.close()
 
@@ -117,7 +71,7 @@ def index():
                     static_graph_url=static_graph_url,
                     interactive_graph_url=interactive_graph_url,
                     markdown_snippet=markdown_snippet,
-                    existing=False  # Indicating this is a new graph
+                    existing=bool(user_data_db)  # Indicating if the graph is being regenerated
                 )
     return render_template("index.html", graph=False)
 

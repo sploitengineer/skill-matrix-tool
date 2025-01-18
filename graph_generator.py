@@ -1,16 +1,21 @@
 import plotly.graph_objects as go
 
 def generate_skill_matrix(languages, static_filename="static/skill_graph.png", interactive_filename="static/skill_graph.html", color="blue", opacity=1.0, size="medium"):
-    """
-    This generates a skill matrix graph with Plotly and save it as an interactive HTML file.
-    """
+
+
 
     valid_colors = {"blue": "rgba(0, 0, 255, {opacity})", "green": "rgba(0, 255, 0, {opacity})", "red": "rgba(255, 0, 0, {opacity})", "magenta": "rgba(255, 0, 255, {opacity})"}
     fill_color = valid_colors.get(color, "rgba(0, 0, 255, {opacity})").format(opacity=opacity)
 
+    #
+    # labels = list(languages.keys())
+    # values = list(languages.values())
 
-    labels = list(languages.keys())
-    values = list(languages.values())
+    # Sort and get the top 10 most used languages
+    sorted_languages = dict(sorted(languages.items(), key=lambda item: item[1], reverse=True)[:10])
+    labels = list(sorted_languages.keys())
+    values = list(sorted_languages.values())
+
 
     if len(labels) < 3:
         # Add dummy values for fewer than 3 languages
