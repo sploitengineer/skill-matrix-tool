@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, url_for
 from github_api import fetch_github_data
 from graph_generator import generate_skill_matrix
 import sqlite3
+import json
 import os
 
 ##Reminder this is only for Render. Normally just initialize init_db.py on local testing
@@ -16,11 +17,38 @@ def init_db():
             graph_url TEXT NOT NULL
         )
     ''')
+    cursor.execute('''
+            CREATE TABLE IF NOT EXISTS cache (
+                username TEXT PRIMARY KEY,
+                data TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
     conn.commit()
     conn.close()
 
 # Call the init_db function when the app starts
 init_db()
+
+# Helper function: Get cached data
+def get_cached_data(username):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    result = cursor.execute("SELECT data FROM cache WHERE username = ?", (username,)).fetchone()
+    conn.close()
+    if result:
+        return json.loads(result["data"])
+    return None
+
+# Helper function: Save data to cache
+def save_to_cache(username, data):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT OR REPLACE INTO cache (username, data) VALUES (?, ?)", (username, json.dumps(data)))
+    conn.commit()
+    conn.close()
+
+
 
 app = Flask(__name__)
 
@@ -33,7 +61,21 @@ def index():
         opacity = float(request.form.get("opacity", "1.0")) #Default to full opacity
         size = request.form.get("size", "medium") # Default to medium size
 
-        user_data = fetch_github_data(username)
+        # Check cache first
+        cached_data = get_cached_data(username)
+        if cached_data:
+            user_data = cached_data
+            graph_regenerated = False
+        else:
+            # Fetch data from GitHub and save to cache
+            try:
+                user_data = fetch_github_data(username)
+                save_to_cache(username, user_data)
+                graph_regenerated = True
+            except Exception as e:
+                return render_template("index.html", error=f"Error fetching data for user '{username}': {e}", graph=False)
+
+        # user_data = fetch_github_data(username)
 
         # Check if the user has public repositories
         if user_data["repos_count"] == 0:
@@ -74,6 +116,7 @@ def index():
 
     return render_template("index.html", graph=False)
 
+# Helper function: Get DB connection
 def get_db_connection():
     conn = sqlite3.connect("database.db")
     conn.row_factory = sqlite3.Row  # Return rows as dictionaries
