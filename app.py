@@ -29,7 +29,7 @@ def index():
     if request.method == "POST":
         username = request.form["username"]
         action = request.form.get("action", "generate")
-        color = request.form.get("color", "blue") # default blue
+        color = request.form.get("color", "magenta") # default to magenta
         opacity = float(request.form.get("opacity", "1.0")) #Default to full opacity
         size = request.form.get("size", "medium") # Default to medium size
 
@@ -37,43 +37,43 @@ def index():
         conn = get_db_connection()
         user_data = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
         conn.close()
+        # Removed this for now
+        # if action == "update":
+        #     ##If the user chooses to update graph
+        #     if user_data:
+        #         # If the user exists in the database, show the existing graph and prompt for an update
+        #         user_data = fetch_github_data(username)
+        #
+        #         if user_data["repos_count"] == 0:
+        #             return render_template("index.html", error="No public repositories found for this user.", graph=False)
+        #
+        #         interactive_filename = f"static/{username}_skill_graph.html"
+        #         static_filename = f"static/{username}_skill_graph.png"
+        #         generate_skill_matrix(user_data["languages"], static_filename, interactive_filename, color, opacity, size)
+        #
+        #         interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
+        #         static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
+        #
+        #         # Update the database with the new graph URL
+        #         conn = get_db_connection()
+        #         conn.execute("UPDATE users SET graph_url = ? WHERE username = ?", (interactive_graph_url, username))
+        #         conn.commit()
+        #         conn.close()
+        #
+        #         markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{static_graph_url})"
+        #
+        #
+        #         return render_template("index.html",
+        #                                username=username,
+        #                                graph=True,
+        #                                static_graph_url=static_graph_url,
+        #                                interactive_graph_url=interactive_graph_url,
+        #                                markdown_snippet=markdown_snippet,
+        #                                existing=True)  # Indicating this is an existing graph
+        #     else:
+        #         return render_template("index.html", error="No existing graph found to update.", graph=False)
 
-        if action == "update":
-            ##If the user chooses to update graph
-            if user_data:
-                # If the user exists in the database, show the existing graph and prompt for an update
-                user_data = fetch_github_data(username)
-
-                if user_data["repos_count"] == 0:
-                    return render_template("index.html", error="No public repositories found for this user.", graph=False)
-
-                interactive_filename = f"static/{username}_skill_graph.html"
-                static_filename = f"static/{username}_skill_graph.png"
-                generate_skill_matrix(user_data["languages"], static_filename, interactive_filename, color, opacity, size)
-
-                interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
-                static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
-
-                # Update the database with the new graph URL
-                conn = get_db_connection()
-                conn.execute("UPDATE users SET graph_url = ? WHERE username = ?", (interactive_graph_url, username))
-                conn.commit()
-                conn.close()
-
-                markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{static_graph_url})"
-
-
-                return render_template("index.html",
-                                       username=username,
-                                       graph=True,
-                                       static_graph_url=static_graph_url,
-                                       interactive_graph_url=interactive_graph_url,
-                                       markdown_snippet=markdown_snippet,
-                                       existing=True)  # Indicating this is an existing graph
-            else:
-                return render_template("index.html", error="No existing graph found to update.", graph=False)
-
-        elif action == "generate":
+        if action == "generate":
             if user_data:
                 graph_url = user_data["graph_url"]
                 markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{graph_url})"
