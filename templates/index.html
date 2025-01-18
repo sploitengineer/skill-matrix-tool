@@ -5,25 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Skill Matrix</title>
     <script>
-        // Function to validate the selected color
         function validateColor() {
             const colorSelect = document.getElementById("color");
             const selectedColor = colorSelect.value;
 
             if (selectedColor === "gradient") {
                 alert("The gradient color theme is currently unavailable. Please choose a solid color.");
-                colorSelect.value = "blue"; // Default to blue
+                colorSelect.value = "magenta"; // Default to magenta
                 return false;
             }
             return true;
         }
 
-        // Attach validation to form submission
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.querySelector("form");
             form.addEventListener("submit", (event) => {
                 if (!validateColor()) {
-                    event.preventDefault(); // Prevent form submission if validation fails
+                    event.preventDefault();
                 }
             });
         });
@@ -39,10 +37,7 @@
 
         <label for="color">Color Theme:</label>
         <select id="color" name="color">
-            <option value="blue">Blue</option>
-            <option value="green">Green</option>
-            <option value="red">Red</option>
-            <option value="gradient">Gradient</option>
+            <option value="magenta">Magenta</option>
         </select>
 
         <label for="opacity">Fill Opacity:</label>
@@ -60,5 +55,11 @@
 
         <button type="submit" name="action" value="generate">Generate Skill Matrix</button>
     </form>
+    {% if graph %}
+        <div>
+            <h3>Generated Skill Matrix</h3>
+            <img src="{{ static_graph_url }}" alt="Skill Matrix">
+        </div>
+    {% endif %}
 </body>
 </html>

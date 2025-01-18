@@ -5,7 +5,7 @@ def generate_skill_matrix(languages, static_filename="static/skill_graph.png", i
     This generates a skill matrix graph with Plotly and save it as an interactive HTML file.
     """
 
-    valid_colors = {"blue": "rgba(0, 0, 255, {opacity})", "green": "rgba(0, 255, 0, {opacity})", "red": "rgba(255, 0, 0, {opacity})"}
+    valid_colors = {"blue": "rgba(0, 0, 255, {opacity})", "green": "rgba(0, 255, 0, {opacity})", "red": "rgba(255, 0, 0, {opacity})", "magenta": "rgba(255, 0, 255, {opacity})"}
     fill_color = valid_colors.get(color, "rgba(0, 0, 255, {opacity})").format(opacity=opacity)
 
 
