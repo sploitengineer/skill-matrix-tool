@@ -48,7 +48,29 @@
             <p style="color: green;">You already have a graph for this username. Would you like to update it?</p>
             <form method="post">
                 <input type="hidden" name="username" value="{{ username }}">
-                 <input type="hidden" name="action" value="update"> <!--Adding action for update-->
+                <input type="hidden" name="action" value="update">
+                <!--Adding action for update-->
+                <label for="color">Color Theme:</label>
+                <select id="update-color" name="color">
+                    <option value="blue" {% if color == "blue" %}selected{% endif %}>Blue</option>
+                    <option value="green" {% if color == "green" %}selected{% endif %}>Green</option>
+                    <option value="red" {% if color == "red" %}selected{% endif %}>Red</option>
+                    <option value="gradient" {% if color == "gradient" %}selected{% endif %}>Gradient</option>
+                </select>
+
+                <label for="opacity">Fill Opacity:</label>
+                <select id="update-opacity" name="opacity">
+                    <option value="1.0" {% if opacity == "1.0" %}selected{% endif %}>Full</option>
+                    <option value="0.5" {% if opacity == "0.5" %}selected{% endif %}>Semi-Transparent</option>
+                </select>
+
+                <label for="size">Graph Size:</label>
+                <select id="update-size" name="size">
+                    <option value="small" {% if size == "small" %}selected{% endif %}>Small</option>
+                    <option value="medium" {% if size == "medium" %}selected{% endif %}>Medium</option>
+                    <option value="large" {% if size == "large" %}selected{% endif %}>Large</option>
+                </select>
+
                 <button type="submit">Update Graph</button>
             </form>
         {% endif %}

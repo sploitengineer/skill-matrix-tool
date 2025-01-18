@@ -69,7 +69,10 @@ def index():
                                        static_graph_url=static_graph_url,
                                        interactive_graph_url=interactive_graph_url,
                                        markdown_snippet=markdown_snippet,
-                                       existing=True)  # Indicating this is an existing graph
+                                       existing=True,
+                                       color=color,
+                                       opacity=opacity,
+                                       size=size)  # Indicating this is an existing graph
             else:
                 return render_template("index.html", error="No existing graph found to update.", graph=False)
 
