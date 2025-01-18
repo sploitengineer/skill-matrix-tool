@@ -33,46 +33,45 @@ def index():
         opacity = float(request.form.get("opacity", "1.0")) #Default to full opacity
         size = request.form.get("size", "medium") # Default to medium size
 
+        user_data = fetch_github_data(username)
 
-        if action == "generate":
+        # Check if the user has public repositories
+        if user_data["repos_count"] == 0:
+            return render_template("index.html", error="No public repositories found for this user.", graph=False)
 
-                user_data = fetch_github_data(username)
+        # Generate the skill matrix graph for the specific user
+        interactive_filename = f"static/{username}_skill_graph.html"
+        static_filename = f"static/{username}_skill_graph.png"
+        generate_skill_matrix(user_data["languages"], static_filename, interactive_filename, color, opacity, size)
 
-                # Check if the user has public repositories
-                if user_data["repos_count"] == 0:
-                    return render_template("index.html", error="No public repositories found for this user.", graph=False)
+        # Generate a unique URL for both versions of the graph
+        interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
+        static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
 
-                # Generate the skill matrix graph for the specific user
-                interactive_filename = f"static/{username}_skill_graph.html"
-                static_filename = f"static/{username}_skill_graph.png"
-                generate_skill_matrix(user_data["languages"], static_filename, interactive_filename, color, opacity, size)
+        # Save/update user graph data in the database
+        conn = get_db_connection()
+        user_data_db = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        if user_data_db:
+            conn.execute("UPDATE users SET graph_url = ? WHERE username = ?", (interactive_graph_url, username))
+        else:
+            conn.execute("INSERT INTO users (username, graph_url) VALUES (?, ?)", (username, interactive_graph_url))
+        conn.commit()
+        conn.close()
 
-                # Generate a unique URL for both versions of the graph
-                interactive_graph_url = url_for("static", filename=f"{username}_skill_graph.html")
-                static_graph_url = url_for("static", filename=f"{username}_skill_graph.png")
+        # Generate the Markdown snippet for embedding
+        markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{static_graph_url})"
 
-                # Save/update user graph data in the database
-                conn = get_db_connection()
-                user_data_db = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
-                if user_data_db:
-                    conn.execute("UPDATE users SET graph_url = ? WHERE username = ?", (interactive_graph_url, username))
-                else:
-                    conn.execute("INSERT INTO users (username, graph_url) VALUES (?, ?)", (username, interactive_graph_url))
-                conn.commit()
-                conn.close()
+        return render_template(
+            "index.html",
+            username=username,
+            graph=True,
+            static_graph_url=static_graph_url,
+            interactive_graph_url=interactive_graph_url,
+            markdown_snippet=markdown_snippet,
+            existing=bool(user_data_db)  # Indicating if the graph is being regenerated
+        )
 
-                # Generate the Markdown snippet for embedding
-                markdown_snippet = f"![Skill Matrix](https://skill-matrix-tool.onrender.com{static_graph_url})"
 
-                return render_template(
-                    "index.html",
-                    username=username,
-                    graph=True,
-                    static_graph_url=static_graph_url,
-                    interactive_graph_url=interactive_graph_url,
-                    markdown_snippet=markdown_snippet,
-                    existing=bool(user_data_db)  # Indicating if the graph is being regenerated
-                )
     return render_template("index.html", graph=False)
 
 def get_db_connection():
