@@ -137,7 +137,7 @@ def get_skill_matrix(username):
         response = {
             "username": user_data["username"],
             "skills": user_data["languages"], ##Skills and their weighted scores
-            "repo_count": user_data["repo_count"],
+            "repo_count": user_data["repos_count"],
         }
 
         return jsonify(response), 200
