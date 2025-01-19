@@ -122,6 +122,35 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row  # Return rows as dictionaries
     return conn
 
+
+
+
+### Rest API
+
+##Normalization functions
+
+## if you want to scale the data for visualization where the range matters.
+def normalize_scores_min_max(skills):
+    scores = skills.values()
+    min_score = min(scores)
+    max_score = max(scores)
+
+    # Avoid division by zero if all scores are the same
+    if max_score == min_score:
+        return {lang: 1.0 for lang in skills}
+
+    return {lang: (score - min_score) / (max_score - min_score) for lang, score in skills.items()}
+
+##  if you want to understand the relative weight of each language in the total usage.
+def normalize_scores_proportion(skills):
+    total_score = sum(skills.values())
+
+    # Avoid division by zero if the total score is 0
+    if total_score == 0:
+        return {lang: 0 for lang in skills}
+
+    return {lang: score / total_score for lang, score in skills.items()}
+
 @app.route("/api/skill_matrix/<username>", methods=["GET"])
 def get_skill_matrix(username):
 
@@ -133,11 +162,23 @@ def get_skill_matrix(username):
         if user_data["repos_count"] == 0:
             return jsonify({"error": "No public repositories found for this user."}), 404
 
+        # raw skills
+        raw_skills = user_data["languages"]
+
+        ## Normalized skills
+        min_max = normalize_scores_min_max(raw_skills)
+        proportion = normalize_scores_proportion(raw_skills)
+
         #The Json response
         response = {
             "username": user_data["username"],
-            "skills": user_data["languages"], ##Skills and their weighted scores
+            # "skills": user_data["languages"], ##Skills and their weighted scores
             "repo_count": user_data["repos_count"],
+            "skills": {
+                "raw": raw_skills,
+                "min_max_normalized": min_max,
+                "proportion_normalized": proportion,
+            }
         }
 
         return jsonify(response), 200
