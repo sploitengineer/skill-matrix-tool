@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, jsonify
 from github_api import fetch_github_data
 from graph_generator import generate_skill_matrix
 import sqlite3
@@ -121,6 +121,28 @@ def get_db_connection():
     conn = sqlite3.connect("database.db")
     conn.row_factory = sqlite3.Row  # Return rows as dictionaries
     return conn
+
+@app.route("/api/skill_matrix/<username>", methods=["GET"])
+def get_skill_matrix(username):
+
+    ##This is a REST API Endpoint: Fetch the skill matrix for a given GitHub username
+    try:
+        user_data = fetch_github_data(username) ##fetch data using our github-api function
+
+        #check if user have public repo
+        if user_data["repo_count"] == 0:
+            return jsonify({"error": "No public repositories found for this user."}), 404
+
+        #The Json response
+        response = {
+            "username": user_data["username"],
+            "skills": user_data["languages"], ##Skills and their weighted scores
+            "repo_count": user_data["repo_count"],
+        }
+
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
