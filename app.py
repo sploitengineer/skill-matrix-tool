@@ -130,7 +130,7 @@ def get_skill_matrix(username):
         user_data = fetch_github_data(username) ##fetch data using our github-api function
 
         #check if user have public repo
-        if user_data["repo_count"] == 0:
+        if user_data["repos_count"] == 0:
             return jsonify({"error": "No public repositories found for this user."}), 404
 
         #The Json response
